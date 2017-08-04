@@ -1,5 +1,7 @@
 {
   "name": "christianblos/symfony-di-annotation",
+  "description": "Allows you to configure symfony dependency injections via annotations",
+  "license": "MIT",
   "require": {
     "doctrine/annotations": "~1.0",
     "symfony/dependency-injection": ">=3.3.1 <4.0.0",
