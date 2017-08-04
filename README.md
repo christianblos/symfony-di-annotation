@@ -62,6 +62,10 @@ Now you can simply retrieve the service from the container:
 $someService = $container->get(SomeService::class);
 ```
 
+> **Note:** You can also add multiple `@Service` annotations if you want to configure two services of the same class.
+> Then you also need to set the id of the service like `@Service(id="myService")` because you can not have two services
+> with the same id (By default, the id is the full class name).
+
 ## Inject params
 
 You can also inject params by adding it to the annotation:
