@@ -1,0 +1,21 @@
+{
+  "name": "christianblos/symfony-di-annotation",
+  "require": {
+    "doctrine/annotations": "~1.0",
+    "symfony/dependency-injection": ">=3.3.1 <4.0.0",
+    "symfony/config": "~3.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Symfony\\Component\\DependencyInjection\\Annotation\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "examples/"
+    ]
+  }
+}
