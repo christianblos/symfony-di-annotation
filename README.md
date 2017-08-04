@@ -66,7 +66,7 @@ $someService = $container->get(SomeService::class);
 
 You can also inject params by adding it to the annotation:
 
-```
+```php
 <?php
 use Symfony\Component\DependencyInjection\Annotation\Service;
 
