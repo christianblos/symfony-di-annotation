@@ -3,8 +3,6 @@
 namespace Symfony\Component\DependencyInjection\Annotation\Inject;
 
 use Doctrine\Common\Annotations\Annotation;
-use InvalidArgumentException;
-use ReflectionClass;
 use ReflectionParameter;
 use Symfony\Component\DependencyInjection\Annotation\Tag\MapTo;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
@@ -53,8 +51,6 @@ class ServicesMappedTo extends Annotation implements InjectableInterface
 
                 if (isset($tag['key']) && $tag['key']) {
                     $key = $tag['key'];
-                } elseif (isset($tag['keyConst']) && $tag['keyConst']) {
-                    $key = $this->getKeyByConstant($className, $tag['keyConst']);
                 }
 
                 $references[$key] = new ServiceClosureArgument(new Reference($serviceId));
@@ -62,25 +58,5 @@ class ServicesMappedTo extends Annotation implements InjectableInterface
         }
 
         return new Definition(ServiceLocator::class, [$references]);
-    }
-
-    /**
-     * @param string $class
-     * @param string $const
-     *
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    private function getKeyByConstant($class, $const)
-    {
-        $ref = new ReflectionClass($class);
-
-        if (!$ref->hasConstant($const)) {
-            throw new \InvalidArgumentException(
-                sprintf('class "%s" must have a constant "%s" (defined in ServicesMappedTo tag)', $class, $const)
-            );
-        }
-
-        return $ref->getConstant($const);
     }
 }

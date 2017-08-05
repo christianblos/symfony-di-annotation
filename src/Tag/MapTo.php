@@ -21,11 +21,6 @@ class MapTo implements TagInterface
     public $key;
 
     /**
-     * @var string
-     */
-    public $keyConst;
-
-    /**
      * @return string
      */
     public function getTagName()
@@ -39,9 +34,8 @@ class MapTo implements TagInterface
     public function getTagAttributes()
     {
         return [
-            'mapTo'    => $this->value,
-            'key'      => $this->key,
-            'keyConst' => $this->keyConst,
+            'mapTo' => $this->value,
+            'key'   => $this->key,
         ];
     }
 }
