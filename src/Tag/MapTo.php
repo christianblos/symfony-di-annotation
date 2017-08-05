@@ -4,6 +4,7 @@ namespace Symfony\Component\DependencyInjection\Annotation\Tag;
 
 /**
  * @Annotation
+ * @Target({"ANNOTATION"})
  */
 class MapTo implements TagInterface
 {

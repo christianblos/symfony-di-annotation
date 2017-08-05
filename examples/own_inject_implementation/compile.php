@@ -9,11 +9,10 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $srcDirs = [
     __DIR__ . '/classes',
 ];
-$namespaces = ['Example\OwnInjectImplementation\Annotation'];
 
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->setParameter('some_param', 'param');
-$containerBuilder->addCompilerPass(AnnotationPass::createDefault($srcDirs, $namespaces));
+$containerBuilder->addCompilerPass(AnnotationPass::createDefault($srcDirs));
 $containerBuilder->compile();
 
 $dumper      = new PhpDumper($containerBuilder);

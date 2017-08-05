@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Annotation\Inject\MethodAnnotationInte
 
 /**
  * @Annotation
+ * @Target({"CLASS"})
  */
 class Service
 {

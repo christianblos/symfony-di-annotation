@@ -27,13 +27,12 @@ class AnnotationPass implements CompilerPassInterface
 
     /**
      * @param array $srcDirs
-     * @param array $namespaces
      *
      * @return AnnotationPass
      */
-    public static function createDefault(array $srcDirs, array $namespaces = [])
+    public static function createDefault(array $srcDirs)
     {
-        $serviceFinder = new ServiceFinder(new FileLoader(), new AutoloadedAnnotationReader($namespaces));
+        $serviceFinder = new ServiceFinder(new FileLoader(), new AutoloadedAnnotationReader());
 
         return new self($srcDirs, $serviceFinder);
     }
@@ -44,8 +43,7 @@ class AnnotationPass implements CompilerPassInterface
      */
     public function __construct(array $srcDirs, ServiceFinder $serviceFinder)
     {
-        $this->srcDirs = $srcDirs;
-
+        $this->srcDirs       = $srcDirs;
         $this->serviceFinder = $serviceFinder;
     }
 

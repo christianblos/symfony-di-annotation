@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @Annotation
+ * @Target({"ANNOTATION"})
  */
 class ServicesImplements extends Annotation implements InjectableInterface
 {
