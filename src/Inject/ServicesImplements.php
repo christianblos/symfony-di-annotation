@@ -12,8 +12,14 @@ use Symfony\Component\DependencyInjection\Reference;
  * @Annotation
  * @Target({"ANNOTATION"})
  */
-class ServicesImplements extends Annotation implements InjectableInterface
+class ServicesImplements implements InjectableInterface
 {
+    /**
+     * @var string
+     * @Required
+     */
+    public $value;
+
     /**
      * @param ReflectionParameter $param
      * @param ContainerBuilder    $container

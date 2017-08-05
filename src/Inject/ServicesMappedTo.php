@@ -15,8 +15,14 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
  * @Annotation
  * @Target({"ANNOTATION"})
  */
-class ServicesMappedTo extends Annotation implements InjectableInterface
+class ServicesMappedTo implements InjectableInterface
 {
+    /**
+     * @var string
+     * @Required
+     */
+    public $value;
+
     /**
      * @param ReflectionParameter $param
      * @param ContainerBuilder    $container

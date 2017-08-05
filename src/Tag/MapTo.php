@@ -12,11 +12,13 @@ class MapTo implements TagInterface
 
     /**
      * @var string
+     * @Required
      */
     public $value;
 
     /**
      * @var string
+     * @Required
      */
     public $key;
 
