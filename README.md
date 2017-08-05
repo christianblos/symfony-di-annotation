@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 $containerBuilder = new ContainerBuilder();
 
+$srcDirs = ['path/to/classes']; // the path(s) to your classes which contain annotations
+
 $containerBuilder->addCompilerPass(AnnotationPass::createDefault($srcDirs));
 ```
 
