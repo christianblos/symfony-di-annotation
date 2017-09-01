@@ -42,6 +42,21 @@ class Service
     public $tags = [];
 
     /**
+     * @var string
+     */
+    public $factoryClass;
+
+    /**
+     * @var string
+     */
+    public $factoryMethod;
+
+    /**
+     * @var array
+     */
+    public $factoryArguments;
+
+    /**
      * @var ReflectionClass
      */
     private $class;

@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\Annotation\Service;
 /**
  * @Service(
  *     public=true,
- *    inject={
- *        "services"=@ServicesImplements("\Example\InjectServicesByInterface\FinderInterface")
- *    }
+ *     inject={
+ *         "services"=@ServicesImplements("\Example\InjectServicesByInterface\FinderInterface")
+ *     }
  * )
  */
 class TestService

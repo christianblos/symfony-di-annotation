@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
 use InvalidArgumentException;
+use ReflectionMethod;
 use ReflectionParameter;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\Annotation\Inject\InjectableInterface;
@@ -75,7 +76,9 @@ class AnnotationPass implements CompilerPassInterface
         foreach ($services as $id => $service) {
             $definition = $container->getDefinition($id);
 
-            $definition->setArguments($this->getConstructorArguments($service, $container));
+            if (!$service->factoryClass) {
+                $definition->setArguments($this->getConstructorArguments($service, $container));
+            }
         }
     }
 
@@ -94,6 +97,17 @@ class AnnotationPass implements CompilerPassInterface
         $definition->setPublic($service->public);
         $definition->setShared($service->shared);
         $definition->setLazy($service->lazy);
+
+        if ($service->factoryClass) {
+            $definition->setFactory([
+                $this->resolveValue($service->factoryClass),
+                $service->factoryMethod,
+            ]);
+
+            if ($service->factoryArguments) {
+                $definition->setArguments(array_map([$this, 'resolveValue'], $service->factoryArguments));
+            }
+        }
 
         $this->addTags($definition, $service);
 
@@ -163,12 +177,24 @@ class AnnotationPass implements CompilerPassInterface
             return [];
         }
 
+        return $this->resolveMethodArguments($constructor, $service->inject, $container);
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     * @param array            $injects
+     * @param ContainerBuilder $container
+     *
+     * @return mixed[] Indexed by param index
+     */
+    private function resolveMethodArguments(ReflectionMethod $method, array $injects, ContainerBuilder $container)
+    {
         $arguments = [];
 
-        foreach ($constructor->getParameters() as $idx => $param) {
-            if (isset($service->inject[$param->name])) {
-                $arguments[$idx] = $this->convertValueToArgument(
-                    $service->inject[$param->name],
+        foreach ($method->getParameters() as $idx => $param) {
+            if (isset($injects[$param->name])) {
+                $arguments[$idx] = $this->resolveMethodParam(
+                    $injects[$param->name],
                     $param,
                     $container
                 );
@@ -185,12 +211,22 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return mixed
      */
-    private function convertValueToArgument($value, ReflectionParameter $param, ContainerBuilder $container)
+    private function resolveMethodParam($value, ReflectionParameter $param, ContainerBuilder $container)
     {
         if ($value instanceof InjectableInterface) {
             return $value->getArgument($param, $container);
         }
 
+        return $this->resolveValue($value);
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return mixed
+     */
+    private function resolveValue($value)
+    {
         if (strpos($value, '%') === 0) {
             return $value;
         }
