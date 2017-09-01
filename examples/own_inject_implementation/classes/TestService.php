@@ -26,6 +26,11 @@ class TestService
     private $finder;
 
     /**
+     * @var string
+     */
+    private $anotherParam;
+
+    /**
      * @Inject({
      *     "param"="%some_param%",
      *     "finder"="@Example\OwnInjectImplementation\FinderB",
@@ -38,12 +43,23 @@ class TestService
         $this->finder = $finder;
     }
 
+    /**
+     * @Inject({
+     *     "anotherParam"="%another_param%",
+     * })
+     */
+    public function setterInjection($anotherParam)
+    {
+        $this->anotherParam = $anotherParam;
+    }
+
     public function get()
     {
         return implode(',', [
             $this->repo->fetch(),
             $this->param,
             $this->finder->find(),
+            $this->anotherParam,
         ]);
     }
 }

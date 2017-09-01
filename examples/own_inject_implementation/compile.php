@@ -12,6 +12,7 @@ $srcDirs = [
 
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->setParameter('some_param', 'param');
+$containerBuilder->setParameter('another_param', 'param2');
 $containerBuilder->addCompilerPass(AnnotationPass::createDefault($srcDirs));
 $containerBuilder->compile();
 

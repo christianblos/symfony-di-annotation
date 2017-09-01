@@ -22,6 +22,11 @@ class Service
     public $inject = [];
 
     /**
+     * @var array
+     */
+    public $methodCalls = [];
+
+    /**
      * @var bool
      */
     public $public;

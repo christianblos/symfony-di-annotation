@@ -57,6 +57,7 @@ class AnnotationPass implements CompilerPassInterface
      * @throws InvalidArgumentException
      * @throws BadMethodCallException
      * @throws ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
     public function process(ContainerBuilder $container)
     {
@@ -78,6 +79,10 @@ class AnnotationPass implements CompilerPassInterface
 
             if (!$service->factoryClass) {
                 $definition->setArguments($this->getConstructorArguments($service, $container));
+
+                foreach ($service->methodCalls as $methodCall) {
+                    $this->addMethodCall($definition, $methodCall, $service, $container);
+                }
             }
         }
     }
@@ -178,6 +183,35 @@ class AnnotationPass implements CompilerPassInterface
         }
 
         return $this->resolveMethodArguments($constructor, $service->inject, $container);
+    }
+
+    /**
+     * @param Definition       $definition
+     * @param array            $methodCall
+     * @param Service          $service
+     * @param ContainerBuilder $container
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function addMethodCall(
+        Definition $definition,
+        array $methodCall,
+        Service $service,
+        ContainerBuilder $container
+    ) {
+        if (!isset($methodCall[0], $methodCall[1]) || !is_string($methodCall[0]) || !is_array($methodCall[1])) {
+            throw new InvalidArgumentException(sprintf(
+                'invalid methodCall configuration for service %s. Must be [$methodName, $params]',
+                $service->id
+            ));
+        }
+
+        list($methodName, $methodParams) = $methodCall;
+
+        $method = $service->getClass()->getMethod($methodName);
+        $args   = $this->resolveMethodArguments($method, $methodParams, $container);
+
+        $definition->addMethodCall($methodName, $args);
     }
 
     /**

@@ -25,7 +25,26 @@ class Inject implements MethodAnnotationInterface
      */
     public function modifyService(Service $service, $methodName, ContainerBuilder $container)
     {
-        $injects = [$service->inject];
+        $injects = $this->getMethodInjects($service, $methodName);
+
+        if ($methodName === '__construct') {
+            $service->inject = array_merge($service->inject, $injects);
+        } else {
+            $service->methodCalls[] = [$methodName, $injects];
+        }
+
+        return $service;
+    }
+
+    /**
+     * @param Service $service
+     * @param string  $methodName
+     *
+     * @return array
+     */
+    private function getMethodInjects(Service $service, $methodName)
+    {
+        $injects = [];
 
         foreach ($service->getMethodAnnotations($methodName) as $methodAnnotation) {
             if ($methodAnnotation instanceof self) {
@@ -33,8 +52,10 @@ class Inject implements MethodAnnotationInterface
             }
         }
 
-        $service->inject = array_merge(...$injects);
+        if ($injects) {
+            return array_merge(...$injects);
+        }
 
-        return $service;
+        return [];
     }
 }

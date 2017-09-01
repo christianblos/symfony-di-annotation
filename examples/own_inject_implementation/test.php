@@ -11,6 +11,6 @@ $container = new DumpedServiceContainer();
 /** @var TestService $testService */
 $testService = $container->get(TestService::class);
 
-if ($testService->get() === 'fetch,param,B') {
+if ($testService->get() === 'fetch,param,B,param2') {
     echo 'yes';
 }
