@@ -4,12 +4,12 @@ namespace Symfony\Component\DependencyInjection\Annotation\Inject;
 
 use Doctrine\Common\Annotations\Annotation;
 use ReflectionParameter;
+use Symfony\Component\DependencyInjection\Annotation\ServiceMap;
 use Symfony\Component\DependencyInjection\Annotation\Tag\MapTo;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\ServiceLocator;
 
 /**
  * @Annotation
@@ -39,6 +39,7 @@ class ServicesMappedTo implements InjectableInterface
         $references = [];
 
         $services = $container->findTaggedServiceIds(MapTo::TAG_NAME);
+        $injects  = [];
 
         foreach ($services as $serviceId => $tags) {
             $definition = $container->findDefinition($serviceId);
@@ -53,16 +54,35 @@ class ServicesMappedTo implements InjectableInterface
                     continue;
                 }
 
-                $key = $className;
-
-                if (isset($tag['key']) && $tag['key']) {
-                    $key = $tag['key'];
-                }
-
-                $references[$key] = new ServiceClosureArgument(new Reference($serviceId));
+                $injects[] = [
+                    'key'       => isset($tag['key']) && $tag['key'] ? $tag['key'] : $className,
+                    'serviceId' => $serviceId,
+                    'priority'  => isset($tag['priority']) ? $tag['priority'] : 0,
+                ];
             }
         }
 
-        return new Definition(ServiceLocator::class, [$references]);
+        usort($injects, [$this, 'sortInjects']);
+
+        foreach ($injects as $inject) {
+            $references[$inject['key']] = new ServiceClosureArgument(new Reference($inject['serviceId']));
+        }
+
+        return new Definition(ServiceMap::class, [$references]);
+    }
+
+    /**
+     * @param array $a
+     * @param array $b
+     *
+     * @return int
+     */
+    private function sortInjects(array $a, array $b)
+    {
+        if ($a['priority'] == $b['priority']) {
+            return 0;
+        }
+
+        return $a['priority'] > $b['priority'] ? -1 : 1;
     }
 }

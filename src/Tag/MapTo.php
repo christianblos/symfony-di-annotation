@@ -23,6 +23,13 @@ class MapTo implements TagInterface
     public $key;
 
     /**
+     * The higher the value, the earlier it will be injected
+     *
+     * @var int
+     */
+    public $priority = 0;
+
+    /**
      * @return string
      */
     public function getTagName()
@@ -36,8 +43,9 @@ class MapTo implements TagInterface
     public function getTagAttributes()
     {
         return [
-            'mapTo' => $this->value,
-            'key'   => $this->key,
+            'mapTo'    => $this->value,
+            'key'      => $this->key,
+            'priority' => $this->priority,
         ];
     }
 }

@@ -4,7 +4,7 @@ namespace Example\InjectServicesMappedTo;
 
 use Symfony\Component\DependencyInjection\Annotation\Inject\ServicesMappedTo;
 use Symfony\Component\DependencyInjection\Annotation\Service;
-use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\DependencyInjection\Annotation\ServiceMap;
 
 /**
  * @Service(
@@ -17,14 +17,14 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 class TestService
 {
     /**
-     * @var ServiceLocator
+     * @var ServiceMap
      */
     private $handlers;
 
     /**
-     * @param ServiceLocator $handlers
+     * @param ServiceMap $handlers
      */
-    public function __construct(ServiceLocator $handlers)
+    public function __construct(ServiceMap $handlers)
     {
         $this->handlers = $handlers;
     }
@@ -37,6 +37,6 @@ class TestService
         /** @var CommandHandlerInterface $handlerB */
         $handlerB = $this->handlers->get('commandB');
 
-        return $handlerA->handle() . ',' . $handlerB->handle();
+        return $handlerA->handle() . ',' . $handlerB->handle() . ',' . implode(',', $this->handlers->getIds());
     }
 }

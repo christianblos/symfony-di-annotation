@@ -11,6 +11,6 @@ $container = new DumpedServiceContainer();
 /** @var TestService $testService */
 $testService = $container->get(TestService::class);
 
-if ($testService->get() === 'A,B') {
+if ($testService->get() === 'A,B,commandB,commandA') {
     echo 'yes';
 }

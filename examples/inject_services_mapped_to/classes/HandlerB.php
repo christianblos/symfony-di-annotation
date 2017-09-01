@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Annotation\Tag\MapTo;
 
 /**
  * @Service(
- *     tags={@MapTo("commandHandler", key=HandlerB::COMMAND_NAME)}
+ *     tags={@MapTo("commandHandler", key=HandlerB::COMMAND_NAME, priority=9)}
  * )
  */
 class HandlerB implements CommandHandlerInterface
