@@ -199,14 +199,24 @@ class AnnotationPass implements CompilerPassInterface
         Service $service,
         ContainerBuilder $container
     ) {
-        if (!isset($methodCall[0], $methodCall[1]) || !is_string($methodCall[0]) || !is_array($methodCall[1])) {
+        if (!isset($methodCall[0]) || !is_string($methodCall[0])) {
             throw new InvalidArgumentException(sprintf(
                 'invalid methodCall configuration for service %s. Must be [$methodName, $params]',
                 $service->id
             ));
         }
 
-        list($methodName, $methodParams) = $methodCall;
+        $methodName   = $methodCall[0];
+        $methodParams = [];
+
+        if (isset($methodCall[1])) {
+            if (!is_array($methodCall[1])) {
+                throw new InvalidArgumentException(
+                    sprintf('params in methodCall for service %s must be an array', $service->id)
+                );
+            }
+            $methodParams = $methodCall[1];
+        }
 
         $method = $service->getClass()->getMethod($methodName);
         $args   = $this->resolveMethodArguments($method, $methodParams, $container);
