@@ -2,6 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
+use InvalidArgumentException;
 use ReflectionParameter;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\Annotation\Inject\InjectableInterface;
@@ -11,6 +12,8 @@ use Symfony\Component\DependencyInjection\Annotation\Tag\TagInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Reference;
 
 class AnnotationPass implements CompilerPassInterface
@@ -50,8 +53,9 @@ class AnnotationPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \Symfony\Component\DependencyInjection\Exception\BadMethodCallException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
+     * @throws ServiceNotFoundException
      */
     public function process(ContainerBuilder $container)
     {
@@ -64,16 +68,7 @@ class AnnotationPass implements CompilerPassInterface
         foreach ($services as $id => $service) {
             $service = $this->modifyServiceByMethodAnnotations($service, $container);
 
-            $className = $service->getClass()->getName();
-
-            $definition = new Definition($className);
-            $definition->setAutowired(true);
-            $definition->setPublic($service->public);
-            $definition->setLazy($service->lazy);
-
-            $this->addTags($definition, $service);
-
-            $container->setDefinition($id, $definition);
+            $container->setDefinition($id, $this->createServiceDefinition($service));
         }
 
         // resolve arguments after all services are added, so we know all available services here
@@ -82,6 +77,27 @@ class AnnotationPass implements CompilerPassInterface
 
             $definition->setArguments($this->getConstructorArguments($service, $container));
         }
+    }
+
+    /**
+     * @param Service $service
+     *
+     * @return Definition
+     * @throws InvalidArgumentException
+     */
+    protected function createServiceDefinition(Service $service)
+    {
+        $className = $service->getClass()->getName();
+
+        $definition = new Definition($className);
+        $definition->setAutowired(true);
+        $definition->setPublic($service->public);
+        $definition->setShared($service->shared);
+        $definition->setLazy($service->lazy);
+
+        $this->addTags($definition, $service);
+
+        return $definition;
     }
 
     /**
@@ -106,7 +122,7 @@ class AnnotationPass implements CompilerPassInterface
      * @param Definition $definition
      * @param Service    $service
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function addTags(Definition $definition, Service $service)
     {
@@ -117,7 +133,7 @@ class AnnotationPass implements CompilerPassInterface
                 $definition->addTag($tag);
             } elseif (is_array($tag)) {
                 if (!isset($tag['name'])) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         sprintf('tag must have a "name" defined in service %s', $service->id)
                     );
                 }

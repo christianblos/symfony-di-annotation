@@ -29,6 +29,11 @@ class Service
     /**
      * @var bool
      */
+    public $shared = true;
+
+    /**
+     * @var bool
+     */
     public $lazy;
 
     /**
