@@ -3,7 +3,6 @@
 namespace Symfony\Component\DependencyInjection\Annotation;
 
 use ReflectionClass;
-use Symfony\Component\DependencyInjection\Annotation\Inject\MethodAnnotationInterface;
 
 /**
  * @Annotation
@@ -88,7 +87,7 @@ class Service
     }
 
     /**
-     * @param MethodAnnotationInterface[][] $annotations
+     * @param array $annotations
      */
     public function setMethodAnnotations(array $annotations)
     {
@@ -96,7 +95,7 @@ class Service
     }
 
     /**
-     * @return MethodAnnotationInterface[][]
+     * @return array
      */
     public function getAllMethodAnnotations()
     {
@@ -106,7 +105,7 @@ class Service
     /**
      * @param string $methodName
      *
-     * @return MethodAnnotationInterface[][]
+     * @return array
      */
     public function getMethodAnnotations($methodName)
     {

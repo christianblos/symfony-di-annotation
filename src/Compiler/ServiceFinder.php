@@ -4,7 +4,6 @@ namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
 use ReflectionClass;
-use Symfony\Component\DependencyInjection\Annotation\Inject\MethodAnnotationInterface;
 use Symfony\Component\DependencyInjection\Annotation\Service;
 
 class ServiceFinder
@@ -81,7 +80,7 @@ class ServiceFinder
     /**
      * @param ReflectionClass $refClass
      *
-     * @return MethodAnnotationInterface[][]
+     * @return array
      */
     private function getMethodAnnotations(ReflectionClass $refClass)
     {
@@ -94,9 +93,7 @@ class ServiceFinder
 
             $methodAnnotations = $this->annotationReader->getMethodAnnotations($method);
             foreach ($methodAnnotations as $methodAnnotation) {
-                if ($methodAnnotation instanceof MethodAnnotationInterface) {
-                    $annotations[$method->getName()][] = $methodAnnotation;
-                }
+                $annotations[$method->getName()][] = $methodAnnotation;
             }
         }
 

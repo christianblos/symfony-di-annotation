@@ -7,7 +7,8 @@ use ReflectionMethod;
 use ReflectionParameter;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\Annotation\Inject\InjectableInterface;
-use Symfony\Component\DependencyInjection\Annotation\Inject\MethodAnnotationInterface;
+use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyContainerInterface;
+use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyServiceAnnotationInterface;
 use Symfony\Component\DependencyInjection\Annotation\Service;
 use Symfony\Component\DependencyInjection\Annotation\Tag\TagInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -67,16 +68,17 @@ class AnnotationPass implements CompilerPassInterface
 
         $services = $this->serviceFinder->findServiceAnnotations($this->srcDirs);
 
+        // register all services first so they are known on the further steps
         foreach ($services as $id => $service) {
-            $service = $this->modifyServiceByMethodAnnotations($service, $container);
+            $service = $this->modifyServiceByMethodAnnotations($id, $service, $container);
 
             $container->setDefinition($id, $this->createServiceDefinition($service));
         }
 
-        // resolve arguments after all services are added, so we know all available services here
         foreach ($services as $id => $service) {
             $definition = $container->getDefinition($id);
 
+            // resolve arguments and method calls
             if (!$service->factoryClass) {
                 $definition->setArguments($this->getConstructorArguments($service, $container));
 
@@ -84,6 +86,8 @@ class AnnotationPass implements CompilerPassInterface
                     $this->addMethodCall($definition, $methodCall, $service, $container);
                 }
             }
+
+            $this->modifyContainerByMethodAnnotations($id, $service, $definition, $container);
         }
     }
 
@@ -120,21 +124,44 @@ class AnnotationPass implements CompilerPassInterface
     }
 
     /**
+     * @param string           $serviceId
      * @param Service          $service
      * @param ContainerBuilder $container
      *
      * @return Service
      */
-    private function modifyServiceByMethodAnnotations(Service $service, ContainerBuilder $container)
+    private function modifyServiceByMethodAnnotations($serviceId, Service $service, ContainerBuilder $container)
     {
         foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
-            /** @var MethodAnnotationInterface[] $methodAnnotations */
             foreach ($methodAnnotations as $methodAnnotation) {
-                $service = $methodAnnotation->modifyService($service, $method, $container);
+                if ($methodAnnotation instanceof ModifyServiceAnnotationInterface) {
+                    $service = $methodAnnotation->modifyService($serviceId, $service, $method, $container);
+                }
             }
         }
 
         return $service;
+    }
+
+    /**
+     * @param string           $serviceId
+     * @param Service          $service
+     * @param Definition       $definition
+     * @param ContainerBuilder $container
+     */
+    private function modifyContainerByMethodAnnotations(
+        $serviceId,
+        Service $service,
+        Definition $definition,
+        ContainerBuilder $container
+    ) {
+        foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
+            foreach ($methodAnnotations as $methodAnnotation) {
+                if ($methodAnnotation instanceof ModifyContainerInterface) {
+                    $methodAnnotation->modifyContainer($serviceId, $service, $definition, $method, $container);
+                }
+            }
+        }
     }
 
     /**

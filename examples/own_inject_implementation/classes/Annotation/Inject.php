@@ -2,14 +2,14 @@
 
 namespace Example\OwnInjectImplementation\Annotation;
 
-use Symfony\Component\DependencyInjection\Annotation\Inject\MethodAnnotationInterface;
+use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyServiceAnnotationInterface;
 use Symfony\Component\DependencyInjection\Annotation\Service;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * @Annotation
  */
-class Inject implements MethodAnnotationInterface
+class Inject implements ModifyServiceAnnotationInterface
 {
     /**
      * @var array
@@ -17,13 +17,14 @@ class Inject implements MethodAnnotationInterface
     public $value;
 
     /**
+     * @param string           $serviceId
      * @param Service          $service
      * @param string           $methodName
      * @param ContainerBuilder $container
      *
      * @return Service
      */
-    public function modifyService(Service $service, $methodName, ContainerBuilder $container)
+    public function modifyService($serviceId, Service $service, $methodName, ContainerBuilder $container)
     {
         $injects = $this->getMethodInjects($service, $methodName);
 
