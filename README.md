@@ -93,6 +93,28 @@ class SomeService
 }
 ```
 
+## Modify container
+
+It is possible to modify the whole container by using method annotations. One possible use case is an
+event listener. Depending on your implementation it could look like this:
+
+```
+class MyListener
+{
+    /**
+     * @ListenTo(UserRegistered::class)
+     */
+    public function doSomethingWhenUserRegistered($event)
+    {
+    
+    }
+}
+```
+
+**Note: This is just an example of what is possible.**
+The "ListenTo" Annotation is not implemented in this library!
+See the [example of how you can implement it](https://github.com/christianblos/symfony-di-annotation/tree/master/examples/modify_container_from_annotation/classes).
+
 ## More examples
 
 You can find some examples in the [examples folder](https://github.com/christianblos/symfony-di-annotation/tree/master/examples).
