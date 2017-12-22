@@ -30,12 +30,13 @@ class ServiceFinder
 
     /**
      * @param string[] $dirs
+     * @param string   $filePattern
      *
      * @return Service[] Indexed by serviceId
      */
-    public function findServiceAnnotations(array $dirs)
+    public function findServiceAnnotations(array $dirs, $filePattern)
     {
-        $fileInfos     = $this->fileLoader->getPhpFilesOfDirs($dirs);
+        $fileInfos     = $this->fileLoader->getPhpFilesOfDirs($dirs, $filePattern);
         $includedFiles = [];
 
         foreach ($fileInfos as $file) {

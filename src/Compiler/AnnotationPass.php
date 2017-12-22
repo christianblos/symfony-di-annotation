@@ -26,29 +26,37 @@ class AnnotationPass implements CompilerPassInterface
     private $srcDirs;
 
     /**
+     * @var string
+     */
+    private $filePattern;
+
+    /**
      * @var ServiceFinder
      */
     private $serviceFinder;
 
     /**
-     * @param array $srcDirs
+     * @param array  $srcDirs
+     * @param string $filePattern
      *
      * @return AnnotationPass
      */
-    public static function createDefault(array $srcDirs)
+    public static function createDefault(array $srcDirs, $filePattern = '/\.php$/')
     {
         $serviceFinder = new ServiceFinder(new FileLoader(), new AutoloadedAnnotationReader());
 
-        return new self($srcDirs, $serviceFinder);
+        return new self($srcDirs, $filePattern, $serviceFinder);
     }
 
     /**
      * @param string[]      $srcDirs
+     * @param string        $filePattern
      * @param ServiceFinder $serviceFinder
      */
-    public function __construct(array $srcDirs, ServiceFinder $serviceFinder)
+    public function __construct(array $srcDirs, $filePattern, ServiceFinder $serviceFinder)
     {
         $this->srcDirs       = $srcDirs;
+        $this->filePattern   = $filePattern;
         $this->serviceFinder = $serviceFinder;
     }
 
@@ -66,7 +74,7 @@ class AnnotationPass implements CompilerPassInterface
             $container->addResource(new DirectoryResource($srcDir));
         }
 
-        $services = $this->serviceFinder->findServiceAnnotations($this->srcDirs);
+        $services = $this->serviceFinder->findServiceAnnotations($this->srcDirs, $this->filePattern);
 
         // register all services first so they are known on the further steps
         foreach ($services as $id => $service) {

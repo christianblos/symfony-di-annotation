@@ -12,10 +12,11 @@ class FileLoader
 {
     /**
      * @param string[] $dirs
+     * @param string   $pattern
      *
      * @return SplFileInfo[]|RegexIterator
      */
-    public function getPhpFilesOfDirs(array $dirs)
+    public function getPhpFilesOfDirs(array $dirs, $pattern)
     {
         $iterator = new AppendIterator();
 
@@ -23,6 +24,6 @@ class FileLoader
             $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)));
         }
 
-        return new RegexIterator($iterator, '/\.php$/');
+        return new RegexIterator($iterator, $pattern);
     }
 }
