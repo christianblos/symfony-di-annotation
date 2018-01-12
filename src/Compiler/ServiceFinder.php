@@ -36,14 +36,13 @@ class ServiceFinder
      */
     public function findServiceAnnotations(array $dirs, $filePattern)
     {
-        $fileInfos     = $this->fileLoader->getPhpFilesOfDirs($dirs, $filePattern);
+        $files         = $this->fileLoader->getPhpFilesOfDirs($dirs, $filePattern);
         $includedFiles = [];
 
-        foreach ($fileInfos as $file) {
-            $realPath = $file->getRealPath();
-            require_once $realPath;
+        foreach ($files as $file) {
+            require_once $file;
 
-            $includedFiles[$realPath] = true;
+            $includedFiles[$file] = true;
         }
 
         $services = [];
