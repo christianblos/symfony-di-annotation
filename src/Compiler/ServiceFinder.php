@@ -61,11 +61,15 @@ class ServiceFinder
 
             /** @var Service $serviceAnnotation */
             $annotations       = $this->annotationReader->getClassAnnotations($refClass);
-            $methodAnnotations = $this->getMethodAnnotations($refClass);
+            $methodAnnotations = null;
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Service) {
                     $annotation->setClass($refClass);
+
+                    if ($methodAnnotations === null) {
+                        $methodAnnotations = $this->getMethodAnnotations($refClass);
+                    }
                     $annotation->setMethodAnnotations($methodAnnotations);
 
                     $id            = $annotation->id ?: $refClass->getName();
