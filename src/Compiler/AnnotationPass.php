@@ -36,6 +36,11 @@ class AnnotationPass implements CompilerPassInterface
     private $serviceFinder;
 
     /**
+     * @var bool
+     */
+    private $trackDirectoryResources;
+
+    /**
      * @param array  $srcDirs
      * @param string $filePattern
      *
@@ -52,12 +57,14 @@ class AnnotationPass implements CompilerPassInterface
      * @param string[]      $srcDirs
      * @param string        $filePattern
      * @param ServiceFinder $serviceFinder
+     * @param bool          $trackDirectoryResources
      */
-    public function __construct(array $srcDirs, $filePattern, ServiceFinder $serviceFinder)
+    public function __construct(array $srcDirs, $filePattern, ServiceFinder $serviceFinder, bool $trackDirectoryResources = true)
     {
-        $this->srcDirs       = $srcDirs;
-        $this->filePattern   = $filePattern;
-        $this->serviceFinder = $serviceFinder;
+        $this->srcDirs                 = $srcDirs;
+        $this->filePattern             = $filePattern;
+        $this->serviceFinder           = $serviceFinder;
+        $this->trackDirectoryResources = $trackDirectoryResources;
     }
 
     /**
@@ -70,8 +77,10 @@ class AnnotationPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        foreach ($this->srcDirs as $srcDir) {
-            $container->addResource(new DirectoryResource($srcDir));
+        if ($this->trackDirectoryResources) {
+            foreach ($this->srcDirs as $srcDir) {
+                $container->addResource(new DirectoryResource($srcDir));
+            }
         }
 
         $services = $this->serviceFinder->findServiceAnnotations($this->srcDirs, $this->filePattern);
