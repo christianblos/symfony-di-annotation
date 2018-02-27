@@ -59,8 +59,12 @@ class AnnotationPass implements CompilerPassInterface
      * @param ServiceFinder $serviceFinder
      * @param bool          $trackDirectoryResources
      */
-    public function __construct(array $srcDirs, $filePattern, ServiceFinder $serviceFinder, bool $trackDirectoryResources = true)
-    {
+    public function __construct(
+        array $srcDirs,
+        $filePattern,
+        ServiceFinder $serviceFinder,
+        $trackDirectoryResources = true
+    ) {
         $this->srcDirs                 = $srcDirs;
         $this->filePattern             = $filePattern;
         $this->serviceFinder           = $serviceFinder;
