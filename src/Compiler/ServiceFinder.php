@@ -9,34 +9,25 @@ use Symfony\Component\DependencyInjection\Annotation\Service;
 class ServiceFinder
 {
     /**
-     * @var FileLoader
-     */
-    private $fileLoader;
-
-    /**
      * @var Reader
      */
     private $annotationReader;
 
     /**
-     * @param FileLoader $fileLoader
-     * @param Reader     $annotationReader
+     * @param Reader $annotationReader
      */
-    public function __construct(FileLoader $fileLoader, Reader $annotationReader)
+    public function __construct(Reader $annotationReader)
     {
-        $this->fileLoader       = $fileLoader;
         $this->annotationReader = $annotationReader;
     }
 
     /**
-     * @param string[] $dirs
-     * @param string   $filePattern
+     * @param string[]|iterable $files
      *
      * @return Service[] Indexed by serviceId
      */
-    public function findServiceAnnotations(array $dirs, $filePattern)
+    public function findServiceAnnotations($files)
     {
-        $files         = $this->fileLoader->getPhpFilesOfDirs($dirs, $filePattern);
         $includedFiles = [];
 
         foreach ($files as $file) {
@@ -48,10 +39,11 @@ class ServiceFinder
         $services = [];
 
         foreach (get_declared_classes() as $className) {
-            $refClass = new ReflectionClass($className);
+            $refClass  = new ReflectionClass($className);
+            $classFile = $refClass->getFileName();
 
             // only read included files
-            if (!isset($includedFiles[$refClass->getFileName()])) {
+            if (!isset($includedFiles[$classFile])) {
                 continue;
             }
 

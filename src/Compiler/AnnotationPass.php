@@ -5,7 +5,6 @@ namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 use InvalidArgumentException;
 use ReflectionMethod;
 use ReflectionParameter;
-use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\Annotation\Inject\InjectableInterface;
 use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyContainerInterface;
 use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyServiceAnnotationInterface;
@@ -21,14 +20,9 @@ use Symfony\Component\DependencyInjection\Reference;
 class AnnotationPass implements CompilerPassInterface
 {
     /**
-     * @var string[]
+     * @var FileLoader
      */
-    private $srcDirs;
-
-    /**
-     * @var string
-     */
-    private $filePattern;
+    private $fileLoader;
 
     /**
      * @var ServiceFinder
@@ -41,32 +35,27 @@ class AnnotationPass implements CompilerPassInterface
     private $trackDirectoryResources;
 
     /**
-     * @param array  $srcDirs
-     * @param string $filePattern
+     * @param string[] $srcDirs
+     * @param string   $filePattern
      *
      * @return AnnotationPass
      */
     public static function createDefault(array $srcDirs, $filePattern = '/\.php$/')
     {
-        $serviceFinder = new ServiceFinder(new FileLoader(), new AutoloadedAnnotationReader());
+        $fileLoader    = new FileLoader($srcDirs, $filePattern);
+        $serviceFinder = new ServiceFinder(new AutoloadedAnnotationReader());
 
-        return new self($srcDirs, $filePattern, $serviceFinder);
+        return new self($fileLoader, $serviceFinder);
     }
 
     /**
-     * @param string[]      $srcDirs
-     * @param string        $filePattern
+     * @param FileLoader    $fileLoader
      * @param ServiceFinder $serviceFinder
      * @param bool          $trackDirectoryResources
      */
-    public function __construct(
-        array $srcDirs,
-        $filePattern,
-        ServiceFinder $serviceFinder,
-        $trackDirectoryResources = true
-    ) {
-        $this->srcDirs                 = $srcDirs;
-        $this->filePattern             = $filePattern;
+    public function __construct(FileLoader $fileLoader, ServiceFinder $serviceFinder, $trackDirectoryResources = true)
+    {
+        $this->fileLoader              = $fileLoader;
         $this->serviceFinder           = $serviceFinder;
         $this->trackDirectoryResources = $trackDirectoryResources;
     }
@@ -82,12 +71,13 @@ class AnnotationPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if ($this->trackDirectoryResources) {
-            foreach ($this->srcDirs as $srcDir) {
-                $container->addResource(new DirectoryResource($srcDir));
+            foreach ($this->fileLoader->getResources() as $resource) {
+                $container->addResource($resource);
             }
         }
 
-        $services = $this->serviceFinder->findServiceAnnotations($this->srcDirs, $this->filePattern);
+        $files    = $this->fileLoader->getPhpFiles();
+        $services = $this->serviceFinder->findServiceAnnotations($files);
 
         // register all services first so they are known on the further steps
         foreach ($services as $id => $service) {
