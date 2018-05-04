@@ -84,6 +84,11 @@ class AnnotationPass implements CompilerPassInterface
             $service = $this->modifyServiceByMethodAnnotations($id, $service, $container);
 
             $container->setDefinition($id, $this->createServiceDefinition($service));
+
+            $className = $service->getClass()->getName();
+            if ($className !== $id) {
+                $container->setAlias($service->getClass()->getName(), $id);
+            }
         }
 
         foreach ($services as $id => $service) {

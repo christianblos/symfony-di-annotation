@@ -17,7 +17,8 @@
   },
   "autoload-dev": {
     "classmap": [
-      "examples/"
+      "examples/",
+      "tests/cases/"
     ]
   }
 }

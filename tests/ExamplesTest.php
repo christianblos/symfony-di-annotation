@@ -2,16 +2,23 @@
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers
- */
 class ExamplesTest extends TestCase
 {
     public function testExamples()
     {
-        /** @var SplFileInfo[] $iterator */
-        $iterator = new FilesystemIterator(__DIR__ . '/../examples/');
+        $this->runTestsForFiles(new FilesystemIterator(__DIR__ . '/../examples/'));
+    }
 
+    public function testCases()
+    {
+        $this->runTestsForFiles(new FilesystemIterator(__DIR__ . '/cases/'));
+    }
+
+    /**
+     * @param SplFileInfo[]|iterable $iterator
+     */
+    private function runTestsForFiles($iterator)
+    {
         foreach ($iterator as $file) {
             if (!$file->isDir()) {
                 continue;
