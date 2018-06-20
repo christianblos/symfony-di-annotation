@@ -292,7 +292,7 @@ class AnnotationPass implements CompilerPassInterface
     }
 
     /**
-     * @param string              $value
+     * @param string|string[]     $value
      * @param ReflectionParameter $param
      * @param ContainerBuilder    $container
      *
@@ -308,12 +308,16 @@ class AnnotationPass implements CompilerPassInterface
     }
 
     /**
-     * @param string $value
+     * @param string|string[] $value
      *
      * @return mixed
      */
     private function resolveValue($value)
     {
+        if (is_array($value)) {
+            return array_map([$this, 'resolveValue'], $value);
+        }
+
         if (strpos($value, '%') === 0) {
             return $value;
         }
