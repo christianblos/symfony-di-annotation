@@ -64,7 +64,7 @@ class ServiceFinder
                     }
                     $annotation->setMethodAnnotations($methodAnnotations);
 
-                    $id            = $this->getServiceId($annotation, $refClass);
+                    $id            = $this->getServiceId($annotation);
                     $services[$id] = $annotation;
                 }
             }
@@ -74,14 +74,13 @@ class ServiceFinder
     }
 
     /**
-     * @param Service         $service
-     * @param ReflectionClass $refClass
+     * @param Service $service
      *
      * @return string
      */
-    protected function getServiceId(Service $service, ReflectionClass $refClass)
+    protected function getServiceId(Service $service)
     {
-        return $service->id ?: $refClass->getName();
+        return $service->id ?: $service->getClass()->getName();
     }
 
     /**
