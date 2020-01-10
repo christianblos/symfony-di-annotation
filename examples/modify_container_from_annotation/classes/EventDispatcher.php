@@ -11,12 +11,12 @@ class EventDispatcher
 {
     private $result = '';
 
-    public function addListener($event, $method)
+    public function addListener($event, $method): void
     {
         $this->result .= $event . ' -> ' . $method;
     }
 
-    public function get()
+    public function get(): string
     {
         return $this->result;
     }

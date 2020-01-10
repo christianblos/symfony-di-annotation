@@ -48,12 +48,12 @@ class TestService
      *     "anotherParam"="%another_param%",
      * })
      */
-    public function setterInjection($anotherParam)
+    public function setterInjection($anotherParam): void
     {
         $this->anotherParam = $anotherParam;
     }
 
-    public function get()
+    public function get(): string
     {
         return implode(',', [
             $this->repo->fetch(),

@@ -24,7 +24,7 @@ class TestService
         $this->fromFactory     = $fromFactory;
     }
 
-    public function get()
+    public function get(): string
     {
         return $this->fromConstructor . ',' . $this->fromFactory;
     }

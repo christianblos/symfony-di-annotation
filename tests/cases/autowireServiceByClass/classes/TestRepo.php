@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Annotation\Service;
  */
 class TestRepo
 {
-    public function fetch()
+    public function fetch(): string
     {
         return 'foo';
     }

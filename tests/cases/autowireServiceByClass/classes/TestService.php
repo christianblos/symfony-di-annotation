@@ -19,7 +19,7 @@ class TestService
         $this->repo = $repo;
     }
 
-    public function get()
+    public function get(): string
     {
         return $this->repo->fetch();
     }

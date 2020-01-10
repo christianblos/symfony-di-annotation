@@ -24,7 +24,7 @@ class TestService
         $this->finder = $finder;
     }
 
-    public function get()
+    public function get(): string
     {
         $values = [];
 

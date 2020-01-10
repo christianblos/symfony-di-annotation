@@ -4,6 +4,7 @@ namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
 use AppendIterator;
 use FilesystemIterator;
+use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
@@ -38,14 +39,14 @@ class FileLoader
      *
      * @return ResourceInterface[]
      */
-    public function getResources()
+    public function getResources(): array
     {
         $resources = [];
 
         foreach ($this->srcDirs as $srcDir) {
             try {
                 $resources[] = new DirectoryResource($srcDir);
-            } catch (\InvalidArgumentException $ex) {
+            } catch (InvalidArgumentException $ex) {
                 //ignore not existing directories
             }
         }

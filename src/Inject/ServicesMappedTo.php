@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Annotation\Inject;
 
 use Doctrine\Common\Annotations\Annotation;
+use InvalidArgumentException;
 use ReflectionParameter;
 use Symfony\Component\DependencyInjection\Annotation\ServiceMap;
 use Symfony\Component\DependencyInjection\Annotation\Tag\MapTo;
@@ -28,7 +29,7 @@ class ServicesMappedTo implements InjectableInterface
      * @param ContainerBuilder    $container
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getArgument(ReflectionParameter $param, ContainerBuilder $container)
     {
@@ -55,9 +56,9 @@ class ServicesMappedTo implements InjectableInterface
                 }
 
                 $injects[] = [
-                    'key'       => isset($tag['key']) && $tag['key'] ? $tag['key'] : $className,
+                    'key'       => $tag['key'] ?: $className,
                     'serviceId' => $serviceId,
-                    'priority'  => isset($tag['priority']) ? $tag['priority'] : 0,
+                    'priority'  => $tag['priority'] ?? 0,
                 ];
             }
         }
@@ -77,9 +78,9 @@ class ServicesMappedTo implements InjectableInterface
      *
      * @return int
      */
-    private function sortInjects(array $a, array $b)
+    private function sortInjects(array $a, array $b): int
     {
-        if ($a['priority'] == $b['priority']) {
+        if ($a['priority'] === $b['priority']) {
             return 0;
         }
 

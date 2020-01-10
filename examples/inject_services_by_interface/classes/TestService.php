@@ -28,7 +28,7 @@ class TestService
         $this->services = $services;
     }
 
-    public function get()
+    public function get(): string
     {
         $result = [];
 

@@ -23,7 +23,7 @@ class AutoloadedAnnotationReader extends AnnotationReader
         parent::__construct($parser);
     }
 
-    private function registerAutoloader()
+    private function registerAutoloader(): void
     {
         if (self::$autoloaderRegistered) {
             return;

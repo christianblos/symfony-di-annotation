@@ -4,12 +4,12 @@ use PHPUnit\Framework\TestCase;
 
 class ExamplesTest extends TestCase
 {
-    public function testExamples()
+    public function testExamples(): void
     {
         $this->runTestsForFiles(new FilesystemIterator(__DIR__ . '/../examples/'));
     }
 
-    public function testCases()
+    public function testCases(): void
     {
         $this->runTestsForFiles(new FilesystemIterator(__DIR__ . '/cases/'));
     }
@@ -17,7 +17,7 @@ class ExamplesTest extends TestCase
     /**
      * @param SplFileInfo[]|iterable $iterator
      */
-    private function runTestsForFiles($iterator)
+    private function runTestsForFiles($iterator): void
     {
         foreach ($iterator as $file) {
             if (!$file->isDir()) {
@@ -39,7 +39,7 @@ class ExamplesTest extends TestCase
      *
      * @return string
      */
-    private function exec($dir, $phpFile)
+    private function exec($dir, $phpFile): string
     {
         $command = sprintf('php %s/%s.php', $dir, $phpFile);
         exec($command, $output, $exitCode);

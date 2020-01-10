@@ -29,7 +29,7 @@ class TestService
         $this->handlers = $handlers;
     }
 
-    public function get()
+    public function get(): string
     {
         /** @var CommandHandlerInterface $handlerA */
         $handlerA = $this->handlers->get('commandA');

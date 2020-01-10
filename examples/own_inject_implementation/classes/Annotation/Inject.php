@@ -43,7 +43,7 @@ class Inject implements ModifyServiceAnnotationInterface
      *
      * @return array
      */
-    private function getMethodInjects(Service $service, $methodName)
+    private function getMethodInjects(Service $service, $methodName): array
     {
         $injects = [];
 

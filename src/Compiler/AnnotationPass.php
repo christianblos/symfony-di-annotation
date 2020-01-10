@@ -40,7 +40,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return AnnotationPass
      */
-    public static function createDefault(array $srcDirs, $filePattern = '/\.php$/')
+    public static function createDefault(array $srcDirs, $filePattern = '/\.php$/'): AnnotationPass
     {
         $fileLoader    = new FileLoader($srcDirs, $filePattern);
         $serviceFinder = new ServiceFinder(new AutoloadedAnnotationReader());
@@ -68,7 +68,7 @@ class AnnotationPass implements CompilerPassInterface
      * @throws ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if ($this->trackDirectoryResources) {
             foreach ($this->fileLoader->getResources() as $resource) {
@@ -113,7 +113,7 @@ class AnnotationPass implements CompilerPassInterface
      * @return Definition
      * @throws InvalidArgumentException
      */
-    protected function createServiceDefinition(Service $service)
+    protected function createServiceDefinition(Service $service): Definition
     {
         $className = $service->getClass()->getName();
 
@@ -146,7 +146,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return Service
      */
-    private function modifyServiceByMethodAnnotations($serviceId, Service $service, ContainerBuilder $container)
+    private function modifyServiceByMethodAnnotations($serviceId, Service $service, ContainerBuilder $container): Service
     {
         foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
             foreach ($methodAnnotations as $methodAnnotation) {
@@ -170,7 +170,8 @@ class AnnotationPass implements CompilerPassInterface
         Service $service,
         Definition $definition,
         ContainerBuilder $container
-    ) {
+    ): void
+    {
         foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
             foreach ($methodAnnotations as $methodAnnotation) {
                 if ($methodAnnotation instanceof ModifyContainerInterface) {
@@ -186,7 +187,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @throws InvalidArgumentException
      */
-    private function addTags(Definition $definition, Service $service)
+    private function addTags(Definition $definition, Service $service): void
     {
         foreach ($service->tags as $tag) {
             if ($tag instanceof TagInterface) {
@@ -212,7 +213,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return mixed[] Indexed by param index
      */
-    private function getConstructorArguments(Service $service, ContainerBuilder $container)
+    private function getConstructorArguments(Service $service, ContainerBuilder $container): array
     {
         if (!is_array($service->inject)) {
             return [];
@@ -241,7 +242,8 @@ class AnnotationPass implements CompilerPassInterface
         array $methodCall,
         Service $service,
         ContainerBuilder $container
-    ) {
+    ): void
+    {
         if (!isset($methodCall[0]) || !is_string($methodCall[0])) {
             throw new InvalidArgumentException(sprintf(
                 'invalid methodCall configuration for service %s. Must be [$methodName, $params]',
@@ -274,7 +276,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return mixed[] Indexed by param index
      */
-    private function resolveMethodArguments(ReflectionMethod $method, array $injects, ContainerBuilder $container)
+    private function resolveMethodArguments(ReflectionMethod $method, array $injects, ContainerBuilder $container): array
     {
         $arguments = [];
 

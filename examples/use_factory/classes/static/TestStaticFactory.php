@@ -4,7 +4,7 @@ namespace Example\UseFactory;
 
 class TestStaticFactory
 {
-    public static function create()
+    public static function create(): TestStaticService
     {
         return new TestStaticService('static');
     }
