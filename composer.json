@@ -3,12 +3,13 @@
   "description": "Allows you to configure symfony dependency injections via annotations",
   "license": "MIT",
   "require": {
+    "php": "~7.3",
     "doctrine/annotations": "~1.0",
-    "symfony/dependency-injection": ">=3.3.1",
-    "symfony/config": ">=3.3.1"
+    "symfony/dependency-injection": ">=4.0",
+    "symfony/config": ">=4.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.3"
+    "phpunit/phpunit": "^8.5"
   },
   "autoload": {
     "psr-4": {

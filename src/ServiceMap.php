@@ -24,7 +24,7 @@ class ServiceMap extends ServiceLocator
     /**
      * @return string[]
      */
-    public function getIds()
+    public function getIds(): array
     {
         return $this->ids;
     }

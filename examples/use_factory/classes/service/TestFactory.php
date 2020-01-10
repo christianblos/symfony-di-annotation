@@ -21,7 +21,7 @@ class TestFactory
         $this->constructorArg = $constructorArg;
     }
 
-    public function create($factoryArg)
+    public function create($factoryArg): TestService
     {
         return new TestService($this->constructorArg, $factoryArg);
     }

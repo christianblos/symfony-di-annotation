@@ -28,7 +28,7 @@ class Service
     /**
      * @var bool
      */
-    public $public;
+    public $public = false;
 
     /**
      * @var bool
@@ -38,7 +38,7 @@ class Service
     /**
      * @var bool
      */
-    public $lazy;
+    public $lazy = false;
 
     /**
      * @var array
@@ -73,7 +73,7 @@ class Service
     /**
      * @param ReflectionClass $class
      */
-    public function setClass(ReflectionClass $class)
+    public function setClass(ReflectionClass $class): void
     {
         $this->class = $class;
     }
@@ -81,7 +81,7 @@ class Service
     /**
      * @return ReflectionClass
      */
-    public function getClass()
+    public function getClass(): ReflectionClass
     {
         return $this->class;
     }
@@ -89,7 +89,7 @@ class Service
     /**
      * @param array $annotations
      */
-    public function setMethodAnnotations(array $annotations)
+    public function setMethodAnnotations(array $annotations): void
     {
         $this->methodAnnotations = $annotations;
     }
@@ -97,7 +97,7 @@ class Service
     /**
      * @return array
      */
-    public function getAllMethodAnnotations()
+    public function getAllMethodAnnotations(): array
     {
         return $this->methodAnnotations;
     }
@@ -107,7 +107,7 @@ class Service
      *
      * @return array
      */
-    public function getMethodAnnotations($methodName)
+    public function getMethodAnnotations($methodName): array
     {
         if (!isset($this->methodAnnotations[$methodName])) {
             return [];

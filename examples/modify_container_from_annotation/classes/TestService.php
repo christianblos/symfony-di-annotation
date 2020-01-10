@@ -13,7 +13,7 @@ class TestService
     /**
      * @ListenTo("someEvent")
      */
-    public function doSomethingWhenEventHappens()
+    public function doSomethingWhenEventHappens(): void
     {
 
     }

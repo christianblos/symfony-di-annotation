@@ -26,7 +26,7 @@ class ServiceFinder
      *
      * @return Service[] Indexed by serviceId
      */
-    public function findServiceAnnotations($files)
+    public function findServiceAnnotations($files): array
     {
         $includedFiles = [];
 
@@ -88,7 +88,7 @@ class ServiceFinder
      *
      * @return array
      */
-    private function getMethodAnnotations(ReflectionClass $refClass)
+    private function getMethodAnnotations(ReflectionClass $refClass): array
     {
         $annotations = [];
 

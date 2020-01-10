@@ -44,7 +44,7 @@ class TestService
         $this->finderB = $finderB;
     }
 
-    public function get()
+    public function get(): string
     {
         return implode(',', [
             $this->repo->fetch(),
