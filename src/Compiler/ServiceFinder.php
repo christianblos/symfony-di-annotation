@@ -1,21 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
 use ReflectionClass;
+use ReflectionMethod;
 use Symfony\Component\DependencyInjection\Annotation\Service;
+use function get_declared_classes;
 
 class ServiceFinder
 {
-    /**
-     * @var Reader
-     */
-    private $annotationReader;
+    private Reader $annotationReader;
 
-    /**
-     * @param Reader $annotationReader
-     */
     public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
@@ -26,7 +23,7 @@ class ServiceFinder
      *
      * @return Service[] Indexed by serviceId
      */
-    public function findServiceAnnotations($files): array
+    public function findServiceAnnotations(iterable $files): array
     {
         $includedFiles = [];
 
@@ -78,7 +75,7 @@ class ServiceFinder
      *
      * @return string
      */
-    protected function getServiceId(Service $service)
+    protected function getServiceId(Service $service): string
     {
         return $service->id ?: $service->getClass()->getName();
     }
@@ -92,7 +89,7 @@ class ServiceFinder
     {
         $annotations = [];
 
-        foreach ($refClass->getMethods() as $method) {
+        foreach ($refClass->getMethods(ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED) as $method) {
             if (!$method->getDocComment()) {
                 continue;
             }

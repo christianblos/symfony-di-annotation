@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
@@ -11,23 +12,19 @@ use RegexIterator;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Config\Resource\ResourceInterface;
 
-class FileLoader
+class FileLoader implements FileLoaderInterface
 {
     /**
-     * @var array|string[]
+     * @var string[]
      */
-    private $srcDirs;
-
-    /**
-     * @var string
-     */
-    private $filePattern;
+    protected array $srcDirs;
+    protected string $filePattern;
 
     /**
      * @param string[] $srcDirs
      * @param string   $filePattern
      */
-    public function __construct(array $srcDirs, $filePattern = '/\.php$/')
+    public function __construct(array $srcDirs, string $filePattern = '/\.php$/')
     {
         $this->srcDirs     = $srcDirs;
         $this->filePattern = $filePattern;
@@ -57,7 +54,7 @@ class FileLoader
     /**
      * @return string[]|RegexIterator
      */
-    public function getPhpFiles()
+    public function getPhpFiles(): iterable
     {
         $iterator = new AppendIterator();
 
