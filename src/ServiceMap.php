@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Annotation;
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use function array_keys;
 
 class ServiceMap extends ServiceLocator
 {
     /**
      * @var string[]
      */
-    private $ids;
+    private array $ids;
 
     /**
      * @param callable[] $factories

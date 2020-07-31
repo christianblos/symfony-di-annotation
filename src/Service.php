@@ -18,32 +18,32 @@ class Service
     /**
      * @var array
      */
-    public $inject = [];
+    public array $inject = [];
 
     /**
      * @var array
      */
-    public $methodCalls = [];
+    public array $methodCalls = [];
 
     /**
      * @var bool
      */
-    public $public = false;
+    public bool $public = false;
 
     /**
      * @var bool
      */
-    public $shared = true;
+    public bool $shared = true;
 
     /**
      * @var bool
      */
-    public $lazy = false;
+    public bool $lazy = false;
 
     /**
      * @var array
      */
-    public $tags = [];
+    public array $tags = [];
 
     /**
      * @var string
@@ -60,15 +60,12 @@ class Service
      */
     public $factoryArguments;
 
-    /**
-     * @var ReflectionClass
-     */
-    private $class;
+    private ReflectionClass $class;
 
     /**
      * @var array
      */
-    private $methodAnnotations = [];
+    private array $methodAnnotations = [];
 
     /**
      * @param ReflectionClass $class
@@ -107,12 +104,8 @@ class Service
      *
      * @return array
      */
-    public function getMethodAnnotations($methodName): array
+    public function getMethodAnnotations(string $methodName): array
     {
-        if (!isset($this->methodAnnotations[$methodName])) {
-            return [];
-        }
-
-        return $this->methodAnnotations[$methodName];
+        return $this->methodAnnotations[$methodName] ?? [];
     }
 }

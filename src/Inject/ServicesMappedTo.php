@@ -3,7 +3,6 @@
 namespace Symfony\Component\DependencyInjection\Annotation\Inject;
 
 use Doctrine\Common\Annotations\Annotation;
-use InvalidArgumentException;
 use ReflectionParameter;
 use Symfony\Component\DependencyInjection\Annotation\ServiceMap;
 use Symfony\Component\DependencyInjection\Annotation\Tag\MapTo;
@@ -11,6 +10,7 @@ use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use function usort;
 
 /**
  * @Annotation

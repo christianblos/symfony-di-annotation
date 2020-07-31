@@ -1,17 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\DocParser;
+use function class_exists;
 
 class AutoloadedAnnotationReader extends AnnotationReader
 {
-    /**
-     * @var bool
-     */
-    private static $autoloaderRegistered = false;
+    private static bool $autoloaderRegistered = false;
 
     public function __construct()
     {

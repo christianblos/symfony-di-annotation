@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Annotation\Compiler;
 
@@ -13,26 +14,29 @@ use Symfony\Component\DependencyInjection\Annotation\Tag\TagInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Reference;
+use function array_map;
+use function is_array;
+use function is_string;
+use function sprintf;
+use function strpos;
+use function substr;
 
 class AnnotationPass implements CompilerPassInterface
 {
-    /**
-     * @var FileLoader
-     */
-    private $fileLoader;
+    private FileLoaderInterface $fileLoader;
+    private ServiceFinder $serviceFinder;
+    private bool $trackDirectoryResources;
 
-    /**
-     * @var ServiceFinder
-     */
-    private $serviceFinder;
-
-    /**
-     * @var bool
-     */
-    private $trackDirectoryResources;
+    public function __construct(
+        FileLoaderInterface $fileLoader,
+        ServiceFinder $serviceFinder,
+        bool $trackDirectoryResources = true
+    ) {
+        $this->fileLoader              = $fileLoader;
+        $this->serviceFinder           = $serviceFinder;
+        $this->trackDirectoryResources = $trackDirectoryResources;
+    }
 
     /**
      * @param string[] $srcDirs
@@ -40,24 +44,12 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return AnnotationPass
      */
-    public static function createDefault(array $srcDirs, $filePattern = '/\.php$/'): AnnotationPass
+    public static function createDefault(array $srcDirs, string $filePattern = '/\.php$/'): AnnotationPass
     {
         $fileLoader    = new FileLoader($srcDirs, $filePattern);
         $serviceFinder = new ServiceFinder(new AutoloadedAnnotationReader());
 
         return new self($fileLoader, $serviceFinder);
-    }
-
-    /**
-     * @param FileLoader    $fileLoader
-     * @param ServiceFinder $serviceFinder
-     * @param bool          $trackDirectoryResources
-     */
-    public function __construct(FileLoader $fileLoader, ServiceFinder $serviceFinder, $trackDirectoryResources = true)
-    {
-        $this->fileLoader              = $fileLoader;
-        $this->serviceFinder           = $serviceFinder;
-        $this->trackDirectoryResources = $trackDirectoryResources;
     }
 
     /**
@@ -78,6 +70,7 @@ class AnnotationPass implements CompilerPassInterface
 
         $files    = $this->fileLoader->getPhpFiles();
         $services = $this->serviceFinder->findServiceAnnotations($files);
+        unset($files);
 
         // register all services first so they are known on the further steps
         foreach ($services as $id => $service) {
@@ -87,7 +80,7 @@ class AnnotationPass implements CompilerPassInterface
 
             $className = $service->getClass()->getName();
             if ($className !== $id) {
-                $container->setAlias($service->getClass()->getName(), $id);
+                $container->setAlias($className, $id);
             }
         }
 
@@ -146,7 +139,7 @@ class AnnotationPass implements CompilerPassInterface
      *
      * @return Service
      */
-    private function modifyServiceByMethodAnnotations($serviceId, Service $service, ContainerBuilder $container): Service
+    private function modifyServiceByMethodAnnotations(string $serviceId, Service $service, ContainerBuilder $container): Service
     {
         foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
             foreach ($methodAnnotations as $methodAnnotation) {
@@ -166,12 +159,11 @@ class AnnotationPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      */
     private function modifyContainerByMethodAnnotations(
-        $serviceId,
+        string $serviceId,
         Service $service,
         Definition $definition,
         ContainerBuilder $container
-    ): void
-    {
+    ): void {
         foreach ($service->getAllMethodAnnotations() as $method => $methodAnnotations) {
             foreach ($methodAnnotations as $methodAnnotation) {
                 if ($methodAnnotation instanceof ModifyContainerInterface) {
@@ -215,7 +207,7 @@ class AnnotationPass implements CompilerPassInterface
      */
     private function getConstructorArguments(Service $service, ContainerBuilder $container): array
     {
-        if (!is_array($service->inject)) {
+        if (empty($service->inject)) {
             return [];
         }
 
@@ -235,15 +227,14 @@ class AnnotationPass implements CompilerPassInterface
      * @param Service          $service
      * @param ContainerBuilder $container
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function addMethodCall(
         Definition $definition,
         array $methodCall,
         Service $service,
         ContainerBuilder $container
-    ): void
-    {
+    ): void {
         if (!isset($methodCall[0]) || !is_string($methodCall[0])) {
             throw new InvalidArgumentException(sprintf(
                 'invalid methodCall configuration for service %s. Must be [$methodName, $params]',
@@ -320,12 +311,14 @@ class AnnotationPass implements CompilerPassInterface
             return array_map([$this, 'resolveValue'], $value);
         }
 
-        if (strpos($value, '%') === 0) {
-            return $value;
-        }
+        if (is_string($value)) {
+            if (strpos($value, '%') === 0) {
+                return $value;
+            }
 
-        if (strpos($value, '@') === 0) {
-            return new Reference(substr($value, 1));
+            if (strpos($value, '@') === 0) {
+                return new Reference(substr($value, 1));
+            }
         }
 
         return $value;

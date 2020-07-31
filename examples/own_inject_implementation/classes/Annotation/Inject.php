@@ -5,6 +5,7 @@ namespace Example\OwnInjectImplementation\Annotation;
 use Symfony\Component\DependencyInjection\Annotation\Modifier\ModifyServiceAnnotationInterface;
 use Symfony\Component\DependencyInjection\Annotation\Service;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use function array_merge;
 
 /**
  * @Annotation
@@ -43,7 +44,7 @@ class Inject implements ModifyServiceAnnotationInterface
      *
      * @return array
      */
-    private function getMethodInjects(Service $service, $methodName): array
+    private function getMethodInjects(Service $service, string $methodName): array
     {
         $injects = [];
 
